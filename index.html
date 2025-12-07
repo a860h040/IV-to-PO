@@ -125,13 +125,13 @@
     .status-dots {
       position: absolute;
       left: 18px;
-      top: 10px;
+      top: 8px;
       display: flex;
       gap: 5px;
     }
     .status-dot {
-      width: 6px;
-      height: 6px;
+      width: 12px;   /* doubled from 6px */
+      height: 12px;
       border-radius: 999px;
       background: rgba(255,255,255,0.8);
     }
@@ -204,12 +204,12 @@
     }
 
     .title-icon-fancy {
-      width: 30px;
-      height: 30px;
-      border-radius: 18px;
+      width: 40px;   /* larger */
+      height: 40px;
+      border-radius: 22px;
       background:
         conic-gradient(from 210deg, #f9e0c3, #f1c4ff, #f6d68c, #f9e0c3);
-      padding: 2px;
+      padding: 3px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -226,7 +226,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 17px;
+      font-size: 34px;  /* doubled from ~17px */
     }
 
     .title-main {
@@ -269,21 +269,21 @@
       color: var(--text-muted);
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       box-shadow: 0 12px 26px rgba(163, 121, 89, 0.45);
       white-space: nowrap;
     }
 
     .pill-chip-emblem {
-      width: 26px;
-      height: 26px;
+      width: 36px;   /* doubled-ish */
+      height: 36px;
       border-radius: 50%;
       background:
         radial-gradient(circle at 25% 25%, #fffaf6, #f2c393);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 15px;
+      font-size: 30px; /* doubled from 15px */
       box-shadow:
         0 0 0 1px rgba(255,255,255,0.9),
         0 6px 14px rgba(167, 115, 83, 0.55);
@@ -372,7 +372,7 @@
       right: 44px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 16px;
+      font-size: 32px;   /* doubled from 16px */
       color: var(--text-soft);
       pointer-events: none;
     }
@@ -382,7 +382,7 @@
       right: 18px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 13px;
+      font-size: 26px;   /* doubled from 13px */
       color: var(--text-soft);
       cursor: pointer;
       display: none;
@@ -407,14 +407,16 @@
       gap: 8px;
     }
 
-    .inv-save-btn::before {
-      content: "🧭";
-      font-size: 15px;
-    }
+    /* Removed the ✨ AI-style icon */
+   .inv-save-btn::before {
+  content: "🧭";
+  font-size: 45px;
+}
+
 
     .inv-save-btn:hover {
       background: linear-gradient(135deg, #d9956a, #b66d48);
-      transform: translateY(-1px);
+      transform: translateY(-4px);
     }
 
     .inv-save-btn:active {
@@ -551,14 +553,14 @@
     }
 
     .ref-icon-wrap {
-      width: 18px;
-      height: 18px;
+      width: 36px;   /* doubled from 18px */
+      height: 36px;
       border-radius: 50%;
       background: radial-gradient(circle at 30% 20%, #ffffff, #d8beff);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
+      font-size: 22px;  /* doubled from 11px */
     }
 
     .ref-button:hover {
@@ -676,7 +678,8 @@
                 autocomplete="off"
               />
               <span class="search-icon"></span>
-              <span id="clearSearch" class="clear-icon">✕</span>
+              <span id="clearSearch" class="clear-icon">Clear ⌦</span>
+             
               <datalist id="drugList"></datalist>
             </div>
             <button id="searchBtn" class="inv-save-btn" type="button">
