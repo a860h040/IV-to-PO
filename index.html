@@ -130,7 +130,7 @@
       gap: 5px;
     }
     .status-dot {
-      width: 12px;   /* doubled from 6px */
+      width: 12px;
       height: 12px;
       border-radius: 999px;
       background: rgba(255,255,255,0.8);
@@ -204,7 +204,7 @@
     }
 
     .title-icon-fancy {
-      width: 40px;   /* larger */
+      width: 40px;
       height: 40px;
       border-radius: 22px;
       background:
@@ -226,7 +226,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 34px;  /* doubled from ~17px */
+      font-size: 34px;
     }
 
     .title-main {
@@ -275,7 +275,7 @@
     }
 
     .pill-chip-emblem {
-      width: 36px;   /* doubled-ish */
+      width: 36px;
       height: 36px;
       border-radius: 50%;
       background:
@@ -283,7 +283,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 30px; /* doubled from 15px */
+      font-size: 30px;
       box-shadow:
         0 0 0 1px rgba(255,255,255,0.9),
         0 6px 14px rgba(167, 115, 83, 0.55);
@@ -372,7 +372,7 @@
       right: 44px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 32px;   /* doubled from 16px */
+      font-size: 32px;
       color: var(--text-soft);
       pointer-events: none;
     }
@@ -382,10 +382,13 @@
       right: 18px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 26px;   /* doubled from 13px */
+      font-size: 14px;
       color: var(--text-soft);
       cursor: pointer;
       display: none;
+      background: rgba(255,255,255,0.7);
+      padding: 2px 8px;
+      border-radius: 999px;
     }
 
     .inv-save-btn {
@@ -407,12 +410,11 @@
       gap: 8px;
     }
 
-    /* Removed the ✨ AI-style icon */
-   .inv-save-btn::before {
-  content: "🧭";
-  font-size: 45px;
-}
-
+    /* Icon before Search button */
+    .inv-save-btn::before {
+      content: "🧭";
+      font-size: 45px;
+    }
 
     .inv-save-btn:hover {
       background: linear-gradient(135deg, #d9956a, #b66d48);
@@ -553,14 +555,14 @@
     }
 
     .ref-icon-wrap {
-      width: 36px;   /* doubled from 18px */
+      width: 36px;
       height: 36px;
       border-radius: 50%;
       background: radial-gradient(circle at 30% 20%, #ffffff, #d8beff);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;  /* doubled from 11px */
+      font-size: 22px;
     }
 
     .ref-button:hover {
@@ -592,42 +594,98 @@
       width: 100%;
     }
 
-    /* Responsive */
+    /* RESPONSIVE – PHONE FRIENDLY */
     @media (max-width: 780px) {
       body {
-        padding: 22px 10px 32px;
+        padding: 18px 8px 28px;
       }
 
       .app-shell {
-        padding: 20px 14px 20px;
-        border-radius: 30px;
+        padding: 16px 10px 16px;
+        border-radius: 26px;
+      }
+
+      .app-shell::before {
+        inset: 8px;
+        border-radius: 22px;
       }
 
       .app-container {
-        border-radius: 24px;
+        border-radius: 20px;
+        padding: 14px 12px 16px;
       }
 
       .status-bar {
-        width: 130px;
-        height: 20px;
+        width: 120px;
+        height: 18px;
+      }
+
+      .status-dots {
+        left: 12px;
+        top: 6px;
       }
 
       .app-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 12px;
       }
 
       .title-main {
-        font-size: 18px;
+        font-size: 16px;
         letter-spacing: 0.14em;
+        white-space: normal;
       }
 
       .subtitle {
         font-size: 11px;
+        max-width: 100%;
+      }
+
+      .pill-chip {
+        align-self: flex-start;
+      }
+
+      .inventory-search-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .inventory-search-row > div[style] {
+        width: 100%;
+      }
+
+      .inventory-search-row input {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .search-icon {
+        right: 40px;
+      }
+
+      .clear-icon {
+        right: 10px;
+      }
+
+      .inv-save-btn {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
       }
 
       .ivpo-conversion {
-        font-size: 24px;
+        font-size: 22px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .title-main {
+        font-size: 15px;
+        letter-spacing: 0.12em;
+      }
+      .ivpo-conversion {
+        font-size: 20px;
       }
     }
   </style>
@@ -679,7 +737,6 @@
               />
               <span class="search-icon"></span>
               <span id="clearSearch" class="clear-icon">Clear ⌦</span>
-             
               <datalist id="drugList"></datalist>
             </div>
             <button id="searchBtn" class="inv-save-btn" type="button">
