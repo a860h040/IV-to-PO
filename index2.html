@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IV → PO Eligibility Dashboard</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* Same luxury palette (kept) */
+      --bg-1: #fbe8dc;
+      --bg-2: #f6d9ff;
+      --bg-3: #fdf5ee;
+
+      --shell: rgba(255, 255, 255, 0.92);
+      --shell-border: rgba(255, 255, 255, 0.95);
+
+      --card: #fff9f3;
+      --card-soft: #fffdf9;
+      --card-border: #f0ded0;
+
+      --primary: #c97f5e;
+      --primary-soft: #f6ddcb;
+      --primary-deep: #aa5f3f;
+
+      --accent-lilac: #e7d5ff;
+      --accent-gold: #f6cf7a;
+
+      --text-main: #352320;
+      --text-muted: #8a6a5b;
+      --text-soft: #b59a8b;
+
+      --radius-shell: 40px;
+      --radius-lg: 26px;
+      --radius-md: 18px;
+
+      --shadow-shell: 0 32px 70px rgba(72, 46, 34, 0.45);
+      --shadow-card: 0 18px 32px rgba(153, 108, 82, 0.28);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      font-family:"Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      padding:32px 14px 40px;
+      color:var(--text-main);
+      background:
+        radial-gradient(circle at 0% 0%, #ffe6d8 0, transparent 55%),
+        radial-gradient(circle at 100% 15%, #f4ddff 0, transparent 55%),
+        radial-gradient(circle at 0% 100%, #ffe6c7 0, transparent 55%),
+        radial-gradient(circle at 80% 100%, #f6f1ff 0, transparent 60%),
+        var(--bg-3);
+      background-attachment:fixed;
+      animation:bgFloat 24s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgFloat {
+      from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
+      to   { background-position: 16px -14px, -18px 18px, 20px 10px, -18px 26px, 0 0; }
+    }
+
+    .app-shell{
+      max-width: 1100px;
+      width: 100%;
+      position: relative;
+      border-radius: var(--radius-shell);
+      padding: 26px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.98), rgba(255,248,243,0.92));
+      box-shadow: var(--shadow-shell);
+      border: 1px solid var(--shell-border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      overflow:hidden;
+    }
+
+    .app-shell::before{
+      content:"";
+      position:absolute;
+      inset:12px;
+      border-radius: calc(var(--radius-shell) - 12px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      pointer-events:none;
+    }
+
+    .status-bar{
+      position:absolute;
+      top:12px;
+      left:50%;
+      transform:translateX(-50%);
+      width:150px;
+      height:22px;
+      border-radius:999px;
+      background: rgba(24, 16, 12, 0.9);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    }
+    .status-dots{
+      position:absolute;
+      left:18px;
+      top:8px;
+      display:flex;
+      gap:5px;
+    }
+    .status-dot{
+      width:12px; height:12px; border-radius:999px;
+      background: rgba(255,255,255,0.8);
+    }
+
+    .app-container{
+      background: linear-gradient(145deg, rgba(255,252,248,0.99), rgba(255,243,232,0.99));
+      border-radius: 30px;
+      padding: 20px;
+      border: 1px solid rgba(242, 223, 205, 0.95);
+      position: relative;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .app-container::before{
+      content:"";
+      position:absolute;
+      left:-38px;
+      top:70px;
+      width:190px;
+      height:190px;
+      border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, rgba(247, 215, 191, 0.9), transparent 70%);
+      opacity: 0.65;
+      pointer-events:none;
+    }
+
+    .app-container::after{
+      content:"";
+      position:absolute;
+      right:-60px;
+      bottom:-40px;
+      width:210px;
+      height:210px;
+      border-radius:50%;
+      background: radial-gradient(circle at 60% 40%, rgba(238, 214, 255, 0.9), transparent 70%);
+      opacity: 0.6;
+      pointer-events:none;
+    }
+
+    .app-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:22px;
+      margin-bottom: 16px;
+      position:relative;
+      z-index:1;
+    }
+
+    .title-group{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      flex:1;
+    }
+
+    .title-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 5px 15px 5px 6px;
+      border-radius:999px;
+      background: rgba(255, 251, 247, 0.98);
+      border: 1px solid rgba(244, 224, 209, 0.95);
+      box-shadow: 0 14px 30px rgba(163, 118, 92, 0.52);
+      backdrop-filter: blur(8px);
+    }
+
+    .title-icon-fancy{
+      width:40px; height:40px;
+      border-radius:22px;
+      background: conic-gradient(from 210deg, #f9e0c3, #f1c4ff, #f6d68c, #f9e0c3);
+      padding:3px;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.8), 0 8px 18px rgba(189, 140, 104, 0.55);
+    }
+    .title-icon-inner{
+      width:100%; height:100%;
+      border-radius:inherit;
+      background: radial-gradient(circle at 30% 20%, #fff, #f5dac0);
+      display:flex; align-items:center; justify-content:center;
+      font-size: 34px;
+    }
+
+    .title-main{
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    .title-subnote{
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-top: 2px;
+    }
+
+    .subtitle{
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      line-height: 1.55;
+      max-width: 720px;
+    }
+    .subtitle strong{ color: var(--text-main); font-weight: 600; }
+
+    .pill-chip{
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: linear-gradient(145deg, #fff1e4, #f5dbc7);
+      border: 1px solid rgba(239, 213, 191, 0.98);
+      font-size: 11px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 12px 26px rgba(163, 121, 89, 0.45);
+      white-space: nowrap;
+    }
+    .pill-chip-emblem{
+      width:36px; height:36px;
+      border-radius:50%;
+      background: radial-gradient(circle at 25% 25%, #fffaf6, #f2c393);
+      display:flex; align-items:center; justify-content:center;
+      font-size: 26px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.9), 0 6px 14px rgba(167, 115, 83, 0.55);
+    }
+    .pill-chip-label{
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .tab-panel{
+      background: linear-gradient(140deg, #fffaf6, #fcefe4);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      border: 1px solid rgba(239, 218, 201, 0.98);
+      box-shadow: var(--shadow-card);
+      position: relative;
+      margin-top: 4px;
+      z-index:1;
+    }
+
+    .ivpo-section-label{
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.24em;
+      color: var(--text-soft);
+      margin-top: 6px;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    /* ===== DASHBOARD UI ===== */
+    .elig-wrap{ display:flex; flex-direction:column; gap:14px; }
+
+    .elig-top{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; flex-wrap:wrap;
+    }
+
+    .elig-title{
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--text-main);
+    }
+
+    .elig-sub{
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      max-width: 760px;
+    }
+
+    .elig-legend{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+
+    .status-pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 10px 20px rgba(153, 108, 82, 0.18);
+      background: rgba(255,255,255,0.75);
+      white-space: nowrap;
+      font-weight: 600;
+    }
+    .dot{ width:10px; height:10px; border-radius:999px; }
+    .pill-eligible .dot{ background:#22c55e; }
+    .pill-pending  .dot{ background:#f59e0b; }
+    .pill-not      .dot{ background:#ef4444; }
+
+    .elig-grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+    }
+
+    .elig-card{
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.96), rgba(255,245,236,0.98));
+      border-radius: var(--radius-md);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow-card);
+      padding: 14px;
+      position: relative;
+      overflow:hidden;
+    }
+    .elig-card::before{
+      content:"";
+      position:absolute; inset:0; border-radius:inherit;
+      background: linear-gradient(120deg, rgba(255,255,255,0.9), transparent 60%),
+                  linear-gradient(0deg, rgba(244,222,207,0.35), transparent 55%);
+      opacity:.55; pointer-events:none;
+    }
+    .elig-card > *{ position:relative; z-index:1; }
+
+    .elig-fields{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .elig-fields .full{ grid-column:1 / -1; }
+
+    .elig-label{
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.22em;
+      color:var(--text-soft);
+      margin-bottom:4px;
+      font-weight:700;
+    }
+
+    .elig-input, .elig-select, .elig-textarea{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(240,217,199,0.95);
+      background: rgba(255,255,255,0.82);
+      padding:10px 12px;
+      font-family: inherit;
+      color: var(--text-main);
+      outline:none;
+      box-shadow: 0 10px 22px rgba(196, 144, 109, 0.18), 0 0 0 1px rgba(255,255,255,0.75);
+    }
+    .elig-textarea{ min-height: 90px; resize: vertical; }
+
+    .elig-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+    .elig-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    .elig-btn{
+      border:none;
+      cursor:pointer;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      color:#fff7f2;
+      background: linear-gradient(135deg, var(--primary), var(--primary-deep));
+      box-shadow: 0 16px 32px rgba(155, 105, 78, 0.45);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .elig-btn.secondary{
+      color: var(--text-main);
+      background: linear-gradient(135deg, #fff1e4, #f5dbc7);
+      border: 1px solid rgba(239, 213, 191, 0.98);
+      box-shadow: 0 12px 26px rgba(163, 121, 89, 0.25);
+      letter-spacing:.08em;
+    }
+    .elig-btn:active{ transform: scale(0.98); }
+
+    .filter-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:6px;
+    }
+    .filter-chips{ display:flex; gap:8px; flex-wrap:wrap; }
+    .chip{
+      border:none;
+      cursor:pointer;
+      border-radius:999px;
+      padding:8px 10px;
+      font-size:11px;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.70);
+      border:1px solid rgba(240,217,199,0.85);
+      box-shadow: 0 10px 18px rgba(153, 108, 82, 0.12);
+      white-space:nowrap;
+      font-weight:700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .chip.active{
+      color: var(--text-main);
+      border-color: rgba(200,127,92,0.55);
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.8), 0 0 0 5px rgba(200,127,92,0.25);
+    }
+
+    .table-wrap{
+      width:100%;
+      overflow:auto;
+      border-radius:18px;
+      border:1px solid rgba(239,218,201,0.95);
+      background: rgba(255,255,255,0.45);
+    }
+    table.elig-table{
+      width:100%;
+      border-collapse:collapse;
+      min-width: 880px;
+      background: rgba(255,255,255,0.75);
+    }
+    .elig-table th, .elig-table td{
+      padding:10px 12px;
+      border-bottom:1px solid rgba(239,218,201,0.75);
+      font-size:12px;
+      vertical-align:top;
+    }
+    .elig-table th{
+      text-align:left;
+      font-size:10px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color: var(--text-soft);
+      font-weight:700;
+      white-space: nowrap;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:800;
+      border:1px solid rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.70);
+      white-space: nowrap;
+    }
+    .badge.eligible{ color:#166534; }
+    .badge.pending{ color:#92400e; }
+    .badge.not{ color:#991b1b; }
+
+    .row-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+    .linkbtn{
+      border:none;
+      background:none;
+      cursor:pointer;
+      font-size:12px;
+      font-weight:800;
+      color: var(--primary-deep);
+      padding:0;
+      text-decoration: underline;
+      white-space: nowrap;
+    }
+
+    .criteria-box{
+      background: linear-gradient(140deg, #fffaf6, #fcefe4);
+      border-radius: 18px;
+      border:1px solid rgba(239,218,201,0.95);
+      padding:12px;
+    }
+    .criteria-box summary{
+      cursor:pointer;
+      font-size:10px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color: var(--text-soft);
+      font-weight:800;
+    }
+    .criteria-box ul{
+      margin:10px 0 0 18px;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .ivpo-status{ font-size:11px; color: var(--text-soft); }
+    .ivpo-status.error{ color:#b24141; }
+
+    .signature, .disclaimer{ max-width: 1100px; width:100%; }
+
+    @media (max-width: 900px){
+      .elig-grid{ grid-template-columns: 1fr; }
+      table.elig-table{ min-width: 760px; }
+    }
+
+    @media (max-width: 780px){
+      body{ padding: 18px 8px 28px; }
+      .app-shell{ padding: 16px 10px; border-radius: 26px; }
+      .app-shell::before{ inset:8px; border-radius:22px; }
+      .app-container{ border-radius: 20px; padding: 14px 12px 16px; }
+      .status-bar{ width:120px; height:18px; }
+      .status-dots{ left:12px; top:6px; }
+      .app-header{ flex-direction:column; align-items:flex-start; gap:12px; }
+      .title-main{ font-size: 15px; white-space: normal; }
+      .subtitle{ font-size: 11px; max-width: 100%; }
+      .pill-chip{ align-self:flex-start; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-shell">
+    <div class="status-bar">
+      <div class="status-dots">
+        <div class="status-dot"></div>
+        <div class="status-dot"></div>
+        <div class="status-dot"></div>
+      </div>
+    </div>
+
+    <div class="app-container">
+      <!-- HEADER -->
+      <div class="app-header">
+        <div class="title-group">
+          <div class="title-chip">
+            <div class="title-icon-fancy">
+              <div class="title-icon-inner">📊</div>
+            </div>
+            <div class="title-main">IV → PO Eligibility Dashboard</div>
+          </div>
+          <div class="title-subnote">CRITERIA-BASED • PHARMACIST DOCUMENTATION</div>
+          <div class="subtitle">
+            Flag patients for IV-to-PO switch using an algorithm aligned to institutional-style criteria.
+            Track <strong>Eligible</strong>, <strong>Pending</strong>, and <strong>Not Eligible</strong> cases, and document pharmacist notes.
+          </div>
+        </div>
+
+        <div class="pill-chip">
+          <div class="pill-chip-emblem">🧠</div>
+          <div class="pill-chip-label">ELIGIBILITY</div>
+        </div>
+      </div>
+
+      <!-- MAIN PANEL -->
+      <div class="tab-panel">
+        <div class="elig-wrap">
+          <div class="elig-top">
+            <div>
+              <div class="elig-title">Dashboard</div>
+              <div class="elig-sub">
+                Stored locally in your browser (auto-saves). Use <strong>Export</strong>/<strong>Import</strong> to share with others for multi-user collaboration.
+              </div>
+            </div>
+
+            <div class="elig-legend">
+              <span class="status-pill pill-eligible"><span class="dot"></span>Eligible</span>
+              <span class="status-pill pill-pending"><span class="dot"></span>Pending</span>
+              <span class="status-pill pill-not"><span class="dot"></span>Not Eligible</span>
+            </div>
+          </div>
+
+          <div class="elig-grid">
+            <!-- LEFT: Form -->
+            <div class="elig-card">
+              <div class="ivpo-section-label" style="margin-top:0;">ADD / UPDATE CASE</div>
+
+              <div class="elig-fields">
+                <div>
+                  <div class="elig-label">Patient Identifier</div>
+                  <input id="eligPatient" class="elig-input" placeholder="e.g., MRN / Initials / Room" />
+                </div>
+
+                <div>
+                  <div class="elig-label">IV Drug</div>
+                  <input id="eligDrug" class="elig-input" placeholder="e.g., Levofloxacin" />
+                </div>
+
+                <div>
+                  <div class="elig-label">Candidate Type</div>
+                  <select id="eligType" class="elig-select">
+                    <option value="nonabx">Non-antimicrobial</option>
+                    <option value="abx">Antimicrobial</option>
+                  </select>
+                </div>
+
+                <div>
+                  <div class="elig-label">Oral Dosage Form Available</div>
+                  <select id="eligOralForm" class="elig-select">
+                    <option value="Unknown" selected>Unknown</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+
+                <div>
+                  <div class="elig-label">Tolerating Oral Intake</div>
+                  <select id="eligPOIntake" class="elig-select">
+                    <option value="Unknown" selected>Unknown</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+
+                <div>
+                  <div class="elig-label">Hemodynamically Stable</div>
+                  <select id="eligHemo" class="elig-select">
+                    <option value="Unknown" selected>Unknown</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+
+                <div>
+                  <div class="elig-label">Afebrile ≥ 24 Hours (ABX)</div>
+                  <select id="eligAfebrile" class="elig-select">
+                    <option value="Unknown" selected>Unknown</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+
+                <div>
+                  <div class="elig-label">WBC Normalizing (ABX)</div>
+                  <select id="eligWBC" class="elig-select">
+                    <option value="Unknown" selected>Unknown</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+
+                <div class="full">
+                  <div class="elig-label">Contraindications (check any)</div>
+                  <div class="elig-row">
+                    <label style="font-size:12px; color:var(--text-muted); display:flex; gap:8px; align-items:center;">
+                      <input type="checkbox" id="eligNPO" /> NPO status
+                    </label>
+                    <label style="font-size:12px; color:var(--text-muted); display:flex; gap:8px; align-items:center;">
+                      <input type="checkbox" id="eligMalabsorp" /> Malabsorption / nonfunctional GI
+                    </label>
+                    <label style="font-size:12px; color:var(--text-muted); display:flex; gap:8px; align-items:center;">
+                      <input type="checkbox" id="eligNV" /> Active nausea/vomiting
+                    </label>
+                  </div>
+                </div>
+
+                <div class="full">
+                  <div class="elig-label">Pharmacist Notes</div>
+                  <textarea id="eligNotes" class="elig-textarea" placeholder="Document rationale, plan, follow-up, barriers, etc."></textarea>
+                </div>
+
+                <div>
+                  <div class="elig-label">IV Regimen (optional)</div>
+                  <input id="eligIVReg" class="elig-input" placeholder="e.g., Ceftriaxone 2 g IV q24h" />
+                </div>
+
+                <div>
+                  <div class="elig-label">PO Regimen (optional)</div>
+                  <input id="eligPOReg" class="elig-input" placeholder="e.g., Amox/Clav 875/125 mg PO BID" />
+                </div>
+
+                <div class="full elig-actions">
+                  <button id="eligAddBtn" class="elig-btn" type="button">➕ Add / Update</button>
+                  <button id="eligClearBtn" class="elig-btn secondary" type="button">↺ Clear</button>
+                  <button id="eligExportBtn" class="elig-btn secondary" type="button">⬇ Export JSON</button>
+
+                  <label class="elig-btn secondary" style="cursor:pointer;">
+                    ⬆ Import JSON
+                    <input id="eligImportFile" type="file" accept="application/json" style="display:none;" />
+                  </label>
+                </div>
+
+                <div class="full">
+                  <div id="eligMsg" class="ivpo-status">ℹ️ Add a case to start building your dashboard.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT: Criteria & Features -->
+            <div class="elig-card">
+              <div class="criteria-box">
+                <details open>
+                  <summary>Key Features</summary>
+                  <ul>
+                    <li>Automated flagging of patients eligible for IV-to-PO switch</li>
+                    <li>Criteria-based algorithm referencing standard institutional guidelines</li>
+                    <li>Color-coded dashboard for “Eligible,” “Pending,” and “Not Eligible” cases</li>
+                    <li>Editable interface for pharmacist notes and conversion documentation</li>
+                    <li>Cloud-style workflow via export/import for multi-user collaboration</li>
+                  </ul>
+                </details>
+              </div>
+
+              <div class="criteria-box" style="margin-top:12px;">
+                <details>
+                  <summary>Conversion Criteria</summary>
+                  <ul>
+                    <li>Patient tolerating oral intake (no nausea/vomiting, functioning GI tract)</li>
+                    <li>Hemodynamically stable</li>
+                    <li>Afebrile for ≥24 hours (for antimicrobial candidates)</li>
+                    <li>WBC within normalizing range</li>
+                    <li>Oral dosage form available and appropriate for absorption</li>
+                    <li>No contraindications (e.g., malabsorption, NPO status)</li>
+                  </ul>
+                </details>
+              </div>
+
+              <div class="criteria-box" style="margin-top:12px;">
+                <details>
+                  <summary>Status Logic</summary>
+                  <ul>
+                    <li><strong>Not Eligible</strong>: any contraindication (NPO, malabsorption/nonfunctional GI, active vomiting) OR oral intake/hemodynamics/oral form is “No”.</li>
+                    <li><strong>Eligible</strong>: all required criteria are “Yes”. If antimicrobial, afebrile ≥24h AND WBC normalizing must also be “Yes”.</li>
+                    <li><strong>Pending</strong>: no hard stop, but one or more criteria are “Unknown” OR antimicrobial criteria not yet met.</li>
+                  </ul>
+                </details>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABLE -->
+          <div class="elig-card">
+            <div class="filter-row">
+              <div class="filter-chips">
+                <button class="chip active" data-filter="all" type="button">All</button>
+                <button class="chip" data-filter="Eligible" type="button">Eligible</button>
+                <button class="chip" data-filter="Pending" type="button">Pending</button>
+                <button class="chip" data-filter="Not Eligible" type="button">Not Eligible</button>
+              </div>
+
+              <div style="min-width:260px; flex:1; max-width:380px;">
+                <input id="eligSearch" class="elig-input" placeholder="Search (patient/drug/notes)..." />
+              </div>
+            </div>
+
+            <div class="table-wrap" style="margin-top:12px;">
+              <table class="elig-table">
+                <thead>
+                  <tr>
+                    <th>Status</th>
+                    <th>Patient</th>
+                    <th>IV Drug</th>
+                    <th>Type</th>
+                    <th>Criteria Snapshot</th>
+                    <th>Notes</th>
+                    <th>Updated</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="eligTbody">
+                  <!-- JS fills -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIGNATURE -->
+  <div class="signature" style="text-align:center; margin-top:24px; font-size:14px; color:#444;">
+    Created by <strong>Alhamza Younis Hamza</strong><br>
+    Doctor of Pharmacy (PharmD) Candidate, Class of 2026
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer" style="
+      margin-top:16px;
+      padding:15px;
+      background:#fff3cd;
+      border:1px solid #ffeeba;
+      border-radius:8px;
+      color:#856404;
+      font-size:14px;
+      text-align:center;
+    ">
+    ⚠️ <strong>Disclaimer:</strong>
+    This tool is for <strong>educational and informational purposes only</strong>.<br />
+    It is <strong>not</strong> a substitute for clinical judgment, institutional protocols, or official guidelines.
+    Always verify with your hospital policies and supervising clinician.
+  </div>
+
+  <script>
+    /* =========================
+       ELIGIBILITY DASHBOARD (Standalone)
+       - Saves to localStorage automatically
+       - Export/Import JSON for sharing
+    ========================= */
+
+    const ELIG_LS_KEY = "ivpoEligibilityDashboardStandaloneV1";
+    let eligCases = [];
+    let eligEditingId = null;
+    let eligFilter = "all";
+    let eligSearchTerm = "";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Load saved cases
+      eligCases = safeParseJSON(localStorage.getItem(ELIG_LS_KEY), []);
+
+      // Wire UI
+      document.getElementById("eligAddBtn").addEventListener("click", upsertEligibilityCase);
+      document.getElementById("eligClearBtn").addEventListener("click", () => clearEligibilityForm(false));
+      document.getElementById("eligExportBtn").addEventListener("click", exportEligibilityJSON);
+      document.getElementById("eligImportFile").addEventListener("change", importEligibilityJSON);
+
+      document.getElementById("eligSearch").addEventListener("input", (e) => {
+        eligSearchTerm = (e.target.value || "").toLowerCase();
+        renderEligibilityTable();
+      });
+
+      document.querySelectorAll(".chip").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".chip").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          eligFilter = btn.getAttribute("data-filter");
+          renderEligibilityTable();
+        });
+      });
+
+      renderEligibilityTable();
+      setEligMsg("ℹ️ Add a case to start building your dashboard.", false);
+    });
+
+    function safeParseJSON(str, fallback) {
+      try {
+        const v = JSON.parse(str);
+        return v ?? fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function getEligFormValues() {
+      const patient = (document.getElementById("eligPatient").value || "").trim();
+      const drug = (document.getElementById("eligDrug").value || "").trim();
+      const type = document.getElementById("eligType").value; // abx / nonabx
+
+      const oralForm = document.getElementById("eligOralForm").value;
+      const poIntake = document.getElementById("eligPOIntake").value;
+      const hemo = document.getElementById("eligHemo").value;
+      const afebrile = document.getElementById("eligAfebrile").value;
+      const wbc = document.getElementById("eligWBC").value;
+
+      const contraindications = {
+        npo: document.getElementById("eligNPO").checked,
+        malabsorp: document.getElementById("eligMalabsorp").checked,
+        nv: document.getElementById("eligNV").checked
+      };
+
+      const notes = (document.getElementById("eligNotes").value || "").trim();
+      const ivReg = (document.getElementById("eligIVReg").value || "").trim();
+      const poReg = (document.getElementById("eligPOReg").value || "").trim();
+
+      return { patient, drug, type, oralForm, poIntake, hemo, afebrile, wbc, contraindications, notes, ivReg, poReg };
+    }
+
+    function computeEligibilityStatus(v) {
+      // Hard stops
+      const hardStop = v.contraindications.npo || v.contraindications.malabsorp || v.contraindications.nv;
+      if (hardStop) {
+        return { status: "Not Eligible", reason: "Contraindication present (NPO/malabsorption/vomiting)." };
+      }
+
+      // Base required criteria
+      const base = [
+        { key: "poIntake", label: "Oral intake" },
+        { key: "hemo", label: "Hemodynamics" },
+        { key: "oralForm", label: "Oral form" }
+      ];
+
+      // Any base "No" => Not Eligible
+      for (const c of base) {
+        if (v[c.key] === "No") return { status: "Not Eligible", reason: `${c.label} not met.` };
+      }
+
+      // Antimicrobial extras
+      const isAbx = v.type === "abx";
+      if (isAbx) {
+        if (v.afebrile === "No") return { status: "Pending", reason: "Not afebrile ≥24h yet." };
+        if (v.wbc === "No") return { status: "Pending", reason: "WBC not normalizing yet." };
+      }
+
+      // Eligible only if all required are "Yes"
+      const needs = [...base];
+      if (isAbx) {
+        needs.push({ key: "afebrile", label: "Afebrile ≥24h" });
+        needs.push({ key: "wbc", label: "WBC normalizing" });
+      }
+
+      const allYes = needs.every((c) => v[c.key] === "Yes");
+      if (allYes) return { status: "Eligible", reason: "All required criteria met." };
+
+      // Otherwise Pending
+      return { status: "Pending", reason: "Waiting on missing/unknown criteria." };
+    }
+
+    function upsertEligibilityCase() {
+      const v = getEligFormValues();
+
+      if (!v.patient || !v.drug) {
+        setEligMsg("ℹ️ Please enter at least Patient Identifier + IV Drug.", true);
+        return;
+      }
+
+      const calc = computeEligibilityStatus(v);
+      const now = new Date();
+
+      const entry = {
+        id: eligEditingId || cryptoRandomId(),
+        ...v,
+        status: calc.status,
+        reason: calc.reason,
+        updatedAt: now.toISOString()
+      };
+
+      const existingIdx = eligCases.findIndex((x) => x.id === entry.id);
+      if (existingIdx >= 0) eligCases[existingIdx] = entry;
+      else eligCases.unshift(entry);
+
+      persistEligibility();
+      renderEligibilityTable();
+
+      setEligMsg(`✅ Saved: ${entry.patient} • ${entry.drug} → ${entry.status} (${entry.reason})`, false);
+
+      eligEditingId = null;
+      document.getElementById("eligAddBtn").textContent = "➕ Add / Update";
+      clearEligibilityForm(true);
+    }
+
+    function persistEligibility() {
+      localStorage.setItem(ELIG_LS_KEY, JSON.stringify(eligCases));
+    }
+
+    function renderEligibilityTable() {
+      const tbody = document.getElementById("eligTbody");
+      tbody.innerHTML = "";
+
+      const filtered = eligCases.filter((x) => {
+        const matchesFilter = (eligFilter === "all") || (x.status === eligFilter);
+        const hay = `${x.patient} ${x.drug} ${x.type} ${x.notes} ${x.ivReg} ${x.poReg}`.toLowerCase();
+        const matchesSearch = !eligSearchTerm || hay.includes(eligSearchTerm);
+        return matchesFilter && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="8" style="padding:14px; color:var(--text-soft); font-style:italic;">
+          No cases found. Add a case above, or change your filter/search.
+        </td>`;
+        tbody.appendChild(tr);
+        return;
+      }
+
+      filtered.forEach((x) => {
+        const tr = document.createElement("tr");
+
+        const badgeClass = x.status === "Eligible" ? "eligible" : x.status === "Pending" ? "pending" : "not";
+        const typeLabel = x.type === "abx" ? "Antimicrobial" : "Non-antimicrobial";
+
+        const snapshot = [
+          `PO Intake: ${x.poIntake}`,
+          `Hemo: ${x.hemo}`,
+          `Oral Form: ${x.oralForm}`,
+          x.type === "abx" ? `Afebrile: ${x.afebrile}` : null,
+          x.type === "abx" ? `WBC: ${x.wbc}` : null,
+          (x.contraindications?.npo || x.contraindications?.malabsorp || x.contraindications?.nv)
+            ? `Contra: ${[
+                x.contraindications.npo ? "NPO" : null,
+                x.contraindications.malabsorp ? "Malabsorption" : null,
+                x.contraindications.nv ? "N/V" : null
+              ].filter(Boolean).join(", ")}`
+            : "Contra: none"
+        ].filter(Boolean).join(" • ");
+
+        tr.innerHTML = `
+          <td><span class="badge ${badgeClass}">${escapeHtml(x.status)}</span></td>
+          <td>
+            <strong>${escapeHtml(x.patient)}</strong>
+            <div style="color:var(--text-soft); font-size:11px; margin-top:4px;">${escapeHtml(x.reason || "")}</div>
+          </td>
+          <td>${escapeHtml(x.drug)}</td>
+          <td>${escapeHtml(typeLabel)}</td>
+          <td style="color:var(--text-muted);">${escapeHtml(snapshot)}</td>
+          <td style="color:var(--text-muted); white-space:pre-wrap;">${escapeHtml(x.notes || "")}</td>
+          <td style="color:var(--text-soft); white-space:nowrap;">${escapeHtml(formatShortDate(x.updatedAt))}</td>
+          <td>
+            <div class="row-actions">
+              <button class="linkbtn" type="button" data-act="edit" data-id="${x.id}">Edit</button>
+              <button class="linkbtn" type="button" data-act="delete" data-id="${x.id}">Delete</button>
+            </div>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+
+      tbody.querySelectorAll("button[data-act]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const act = btn.getAttribute("data-act");
+          const id = btn.getAttribute("data-id");
+          if (act === "edit") loadEligibilityIntoForm(id);
+          if (act === "delete") deleteEligibilityCase(id);
+        });
+      });
+    }
+
+    function loadEligibilityIntoForm(id) {
+      const x = eligCases.find((c) => c.id === id);
+      if (!x) return;
+
+      eligEditingId = x.id;
+
+      document.getElementById("eligPatient").value = x.patient || "";
+      document.getElementById("eligDrug").value = x.drug || "";
+      document.getElementById("eligType").value = x.type || "nonabx";
+
+      document.getElementById("eligOralForm").value = x.oralForm || "Unknown";
+      document.getElementById("eligPOIntake").value = x.poIntake || "Unknown";
+      document.getElementById("eligHemo").value = x.hemo || "Unknown";
+      document.getElementById("eligAfebrile").value = x.afebrile || "Unknown";
+      document.getElementById("eligWBC").value = x.wbc || "Unknown";
+
+      document.getElementById("eligNPO").checked = !!x.contraindications?.npo;
+      document.getElementById("eligMalabsorp").checked = !!x.contraindications?.malabsorp;
+      document.getElementById("eligNV").checked = !!x.contraindications?.nv;
+
+      document.getElementById("eligNotes").value = x.notes || "";
+      document.getElementById("eligIVReg").value = x.ivReg || "";
+      document.getElementById("eligPOReg").value = x.poReg || "";
+
+      document.getElementById("eligAddBtn").textContent = "✅ Update Case";
+      setEligMsg(`✏️ Editing: ${x.patient} • ${x.drug}`, false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function deleteEligibilityCase(id) {
+      const x = eligCases.find((c) => c.id === id);
+      eligCases = eligCases.filter((c) => c.id !== id);
+      persistEligibility();
+      renderEligibilityTable();
+      setEligMsg(`🗑️ Deleted: ${x ? `${x.patient} • ${x.drug}` : "case"}`, false);
+    }
+
+    function clearEligibilityForm(keepMsg) {
+      document.getElementById("eligPatient").value = "";
+      document.getElementById("eligDrug").value = "";
+      document.getElementById("eligType").value = "nonabx";
+
+      document.getElementById("eligOralForm").value = "Unknown";
+      document.getElementById("eligPOIntake").value = "Unknown";
+      document.getElementById("eligHemo").value = "Unknown";
+      document.getElementById("eligAfebrile").value = "Unknown";
+      document.getElementById("eligWBC").value = "Unknown";
+
+      document.getElementById("eligNPO").checked = false;
+      document.getElementById("eligMalabsorp").checked = false;
+      document.getElementById("eligNV").checked = false;
+
+      document.getElementById("eligNotes").value = "";
+      document.getElementById("eligIVReg").value = "";
+      document.getElementById("eligPOReg").value = "";
+
+      eligEditingId = null;
+      document.getElementById("eligAddBtn").textContent = "➕ Add / Update";
+      if (!keepMsg) setEligMsg("ℹ️ Form cleared.", false);
+    }
+
+    function exportEligibilityJSON() {
+      const payload = { exportedAt: new Date().toISOString(), cases: eligCases };
+      const text = JSON.stringify(payload, null, 2);
+
+      const blob = new Blob([text], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "ivpo_eligibility_dashboard.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      setEligMsg("⬇ Exported JSON file. Share + import on another device.", false);
+    }
+
+    function importEligibilityJSON(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          const incoming = Array.isArray(parsed?.cases) ? parsed.cases : (Array.isArray(parsed) ? parsed : []);
+          if (!Array.isArray(incoming)) throw new Error("Invalid JSON format.");
+
+          // Merge by id (incoming wins)
+          const map = new Map(eligCases.map((x) => [x.id, x]));
+          incoming.forEach((x) => { if (x && x.id) map.set(x.id, x); });
+
+          eligCases = Array.from(map.values())
+            .sort((a,b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+
+          persistEligibility();
+          renderEligibilityTable();
+          setEligMsg(`⬆ Imported ${incoming.length} case(s) successfully.`, false);
+        } catch (err) {
+          console.error(err);
+          setEligMsg("⚠️ Import failed. Please choose a valid exported JSON file.", true);
+        } finally {
+          e.target.value = "";
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function setEligMsg(text, isError) {
+      const el = document.getElementById("eligMsg");
+      el.textContent = text;
+      if (isError) el.classList.add("error");
+      else el.classList.remove("error");
+    }
+
+    function formatShortDate(iso) {
+      if (!iso) return "";
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return "";
+      return d.toLocaleString([], { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+    }
+
+    function cryptoRandomId() {
+      try {
+        const arr = new Uint32Array(2);
+        crypto.getRandomValues(arr);
+        return `c_${arr[0].toString(16)}${arr[1].toString(16)}`;
+      } catch {
+        return `c_${Math.random().toString(16).slice(2)}${Date.now().toString(16)}`;
+      }
+    }
+
+    function escapeHtml(str) {
+      return (str ?? "").toString()
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+  </script>
+</body>
+</html>
